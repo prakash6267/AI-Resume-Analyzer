@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ resume.personal.full_name }} - Resume</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 10mm 12mm 10mm 12mm;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      color: #111827;
+      background-color: #ffffff;
+      line-height: 1.35;
+      font-size: 9.5pt;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1.5px solid #111827;
+    }
+    .name {
+      font-size: 18pt;
+      font-weight: bold;
+      letter-spacing: -0.2px;
+      margin-bottom: 2px;
+    }
+    .target-role {
+      font-size: 10.5pt;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 3px;
+    }
+    .contact-line {
+      font-size: 8.5pt;
+      color: #4b5563;
+      margin-top: 2px;
+    }
+    .contact-line a {
+      color: #111827;
+      text-decoration: none;
+    }
+    .section {
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: 9.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #9ca3af;
+      padding-bottom: 1px;
+      margin-bottom: 4px;
+      color: #111827;
+    }
+    .summary-text {
+      text-align: justify;
+      font-size: 9pt;
+      margin-bottom: 4px;
+    }
+    .item {
+      margin-bottom: 5px;
+    }
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 9.5pt;
+    }
+    .item-subtitle {
+      display: flex;
+      justify-content: space-between;
+      font-style: italic;
+      color: #4b5563;
+      font-size: 8.5pt;
+      margin-bottom: 1px;
+    }
+    ul.bullets {
+      margin-left: 14px;
+      margin-top: 1px;
+    }
+    ul.bullets li {
+      margin-bottom: 1.5px;
+      font-size: 9pt;
+      text-align: justify;
+    }
+    .skills-category {
+      margin-bottom: 2px;
+      font-size: 9pt;
+    }
+    .skills-category strong {
+      font-size: 9pt;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="name">{{ resume.personal.full_name or 'Your Name' }}</div>
+    {% if resume.target_role %}
+    <div class="target-role">{{ resume.target_role }}</div>
+    {% endif %}
+    <div class="contact-line">
+      {{ contact_items | join(' | ') }}
+    </div>
+  </div>
+
+  {% if resume.summary %}
+  <div class="section">
+    <div class="section-title">Summary</div>
+    <p class="summary-text">{{ resume.summary }}</p>
+  </div>
+  {% endif %}
+
+  {% if resume.skills and resume.skills|length > 0 %}
+  <div class="section">
+    <div class="section-title">Skills</div>
+    {% for cat in resume.skills %}
+    <div class="skills-category">
+      <strong>{{ cat.category }}:</strong> {{ cat['items'] | join(', ') }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if resume.experience and resume.experience|length > 0 %}
+  <div class="section">
+    <div class="section-title">Experience</div>
+    {% for exp in resume.experience %}
+    <div class="item">
+      <div class="item-header">
+        <span>{{ exp.title }}, {{ exp.company }}</span>
+        <span>{{ exp.start }} - {{ exp.end }}</span>
+      </div>
+      <ul class="bullets">
+        {% for b in exp.bullets %}
+        <li>{{ b }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if resume.projects and resume.projects|length > 0 %}
+  <div class="section">
+    <div class="section-title">Projects</div>
+    {% for proj in resume.projects %}
+    <div class="item">
+      <div class="item-header">
+        <span>{{ proj.name }} {% if proj.tech and proj.tech|length > 0 %}({{ proj.tech | join(', ') }}){% endif %}</span>
+        {% if proj.clean_link %}<span><a href="{{ proj.clean_link }}">{{ proj.clean_link }}</a></span>{% endif %}
+      </div>
+      <ul class="bullets">
+        {% for b in proj.bullets %}
+        <li>{{ b }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if resume.education and resume.education|length > 0 %}
+  <div class="section">
+    <div class="section-title">Education</div>
+    {% for edu in resume.education %}
+    <div class="item">
+      <div class="item-header">
+        <span>{{ edu.degree }} — {{ edu.institution }}</span>
+        <span>{{ edu.start_year }} - {{ edu.end_year }}</span>
+      </div>
+      <div class="item-subtitle">
+        <span>{{ edu.score }}{% if edu.cgpa_scale %}{{ edu.cgpa_scale }}{% endif %}</span>
+        {% if edu.coursework and edu.coursework|length > 0 %}
+        <span>Coursework: {{ edu.coursework | join(', ') }}</span>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if resume.certifications and resume.certifications|length > 0 %}
+  <div class="section">
+    <div class="section-title">Certifications</div>
+    <ul class="bullets">
+      {% for cert in resume.certifications %}
+      <li>{{ cert }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if resume.achievements and resume.achievements|length > 0 %}
+  <div class="section">
+    <div class="section-title">Achievements</div>
+    <ul class="bullets">
+      {% for ach in resume.achievements %}
+      <li>{{ ach }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+</body>
+</html>
